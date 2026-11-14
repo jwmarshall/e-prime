@@ -18,6 +18,11 @@ compare every installed file with the source. Temporary files are removed.
 `npm run build` also writes the tarball and `SHA256SUMS` to `dist/`.
 Older local tarballs remain there; the checksum describes only the latest build.
 
+They also check the Git-distributed plugin manifests and catalogs: names,
+publisher metadata, version alignment, repository-root sources, and opt-in
+installation. These bounded checks are not full provider schema validators.
+See [marketplace publishing](MARKETPLACES.md) for native validation and testing.
+
 There is no compilation step. Do not add a bundler, generated skill copy, or
 runtime dependency just to package Markdown. Build scripts and development
 records must not ship to consumers. If package contents intentionally change,
@@ -42,18 +47,50 @@ update the allowlist in `scripts/package.mjs` and the README together.
 
 Pull requests and pushes to `main` run package builds and offline install
 checks on Linux and Windows with Node.js 22 and 24. CI also runs actionlint
-against both workflows and retains one build artifact for 14 days.
+against all workflows and retains one build artifact for 14 days.
 
 Actions use commit-pinned revisions and read-only permissions by default.
 Dependabot proposes GitHub Actions updates weekly. The actionlint binary and
 its checksum are pinned in `ci.yml`; update both together when upgrading it.
-Only the tag-triggered release job has `contents: write`. No workflow needs
-an npm token, an npm environment, or OIDC publishing permissions.
+Only the tag-triggered release job has `contents: write`. The Pages deployment
+job has `pages: write` and `id-token: write` for GitHub Pages, not npm publishing.
+No workflow needs an npm token or an npm environment.
 
 Repository owners should enable a `main` branch ruleset requiring pull requests
 and the four `Package / Node …` checks plus `Workflow lint`, and restrict `v*`
 tag creation to maintainers. These GitHub settings require owner configuration;
 workflow files alone do not enforce them.
+
+## GitHub Pages
+
+`docs/index.html` contains the complete public site, including its styles.
+No JavaScript, external fonts, frontend dependencies, or compilation required.
+Keep installation instructions and limitations aligned with the README.
+
+Preview locally with Python 3:
+
+```sh
+python3 -m http.server 8000 --bind 127.0.0.1 --directory docs
+```
+
+Open `http://127.0.0.1:8000/` and check desktop and narrow mobile layouts,
+navigation anchors, and each installation disclosure. Stop the server with
+Ctrl-C. The HTML also works directly from disk.
+
+To deploy:
+
+1. In the repository's **Settings → Pages → Build and deployment**, choose
+   **GitHub Actions** as the source.
+2. Push the page and `.github/workflows/pages.yml` to `main`. The workflow
+   deploys changes to `docs/` or itself; **Actions → GitHub Pages → Run workflow**
+   on `main` also triggers a deployment.
+3. Check the deployment's environment URL. With the default project-site
+   settings, the URL is `https://jwmarshall.github.io/e-prime/`.
+
+The workflow uploads only `docs/` and deploys through the `github-pages`
+environment. Configure any required environment approvals in GitHub settings.
+It never publishes to npm. Local preview and workflow lint do not establish
+that a live Pages deployment succeeded.
 
 ## Manual release checklist
 
@@ -62,6 +99,10 @@ workflow files alone do not enforce them.
 1. Choose an unused npm version and update `package.json`. For a subsequent
    release, `npm version patch --no-git-tag-version` updates the version without
    creating a commit or tag. The initial release already uses `0.1.0`.
+   Set the same version in `plugin.json` and `.claude-plugin/plugin.json`.
+   The build rejects version drift; the catalogs inherit plugin metadata.
+   Bump these versions whenever publishing skill changes so plugin updaters
+   do not retain the old policy.
 2. Move the relevant changelog entries under the version and release date.
 3. Run `npm run build`, review the output, and merge the reviewed changes to
    `main`. Wait for all CI checks on that commit to pass.
@@ -133,3 +174,8 @@ your actual host before announcing host-specific compatibility.
 
 No release or publication occurs merely by running local checks. This workflow
 deliberately does not configure automatic npm publishing or npm provenance.
+
+Git marketplaces distribute from the repository independently of npm. Follow
+[the marketplace checklist](MARKETPLACES.md#publishing-checklist) before
+submitting to provider directories. A push, GitHub release, or npm publication
+does not submit or approve any official marketplace listing.

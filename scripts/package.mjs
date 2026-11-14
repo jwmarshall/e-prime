@@ -38,6 +38,44 @@ if (process.env.RELEASE_TAG !== undefined) {
   assert.equal(process.env.RELEASE_TAG, `v${pkg.version}`, 'Release tag must match package.json version');
 }
 
+// Git-distributed plugins share the npm skill without copying its policy.
+const manifestKeys = new Set([
+  '$schema', 'name', 'version', 'description', 'author', 'homepage',
+  'repository', 'license', 'keywords',
+]);
+for (const path of ['plugin.json', '.claude-plugin/plugin.json']) {
+  const manifest = JSON.parse(source(path));
+  assert.equal(manifest.name, 'e-prime', `${path}: plugin namespace must match the skill`);
+  assert.equal(manifest.version, pkg.version, `${path}: version must match package.json`);
+  assert.equal(manifest.license, pkg.license, `${path}: license must match package.json`);
+  assert.equal(manifest.author.name, pkg.author, `${path}: publisher must match package.json`);
+  assert.equal(typeof manifest.description, 'string', `${path}: description must be text`);
+  assert(manifest.description.trim(), `${path}: description must not be empty`);
+  assert.equal(manifest.homepage, pkg.homepage, `${path}: homepage must match package.json`);
+  assert.equal(manifest.repository, 'https://github.com/jwmarshall/e-prime');
+  assert(Array.isArray(manifest.keywords) && manifest.keywords.every((tag) => typeof tag === 'string'));
+  for (const key of Object.keys(manifest)) {
+    assert(manifestKeys.has(key), `${path}: review unexpected field ${key}; this plugin only bundles skills`);
+  }
+}
+assert.equal(JSON.parse(source('plugin.json')).$schema,
+  'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json');
+
+const claudeCatalog = JSON.parse(source('.claude-plugin/marketplace.json'));
+const codexCatalog = JSON.parse(source('.agents/plugins/marketplace.json'));
+for (const catalog of [claudeCatalog, codexCatalog]) {
+  assert.equal(catalog.name, 'jwmarshall-e-prime');
+  assert.equal(catalog.plugins.length, 1, 'The marketplace must distribute only this plugin');
+  assert.equal(catalog.plugins[0].name, 'e-prime', 'Marketplace entry must resolve the plugin name');
+}
+assert.equal(claudeCatalog.owner.name, pkg.author);
+assert.equal(claudeCatalog.plugins[0].source, './', 'Claude marketplace must resolve the repository root');
+assert.deepEqual(codexCatalog.plugins[0].source, { source: 'local', path: './' },
+  'Codex marketplace must resolve the repository root');
+assert.equal(codexCatalog.plugins[0].policy.installation, 'AVAILABLE', 'Plugin installation must remain opt-in');
+assert.equal(codexCatalog.plugins[0].policy.authentication, 'ON_INSTALL');
+assert.equal(codexCatalog.plugins[0].category, 'Productivity');
+
 // Check the current folded-scalar frontmatter, not a general YAML grammar.
 const skill = source('skills/e-prime/SKILL.md');
 assert.match(skill, /^---\r?\nname: e-prime\r?\ndescription: >\r?\n(?:  .+\r?\n)+---\r?\n/,
@@ -80,7 +118,7 @@ try {
   for (const path of expectedFiles) {
     assert.equal(readFileSync(join(installed, path), 'utf8'), source(path), `Installed file differs: ${path}`);
   }
-  console.log(`Validated ${pkg.name}@${pkg.version}: ${expectedFiles.length} files; local links and offline install passed.`);
+  console.log(`Validated ${pkg.name}@${pkg.version}: marketplace manifests, ${expectedFiles.length} npm files, local links, and offline install passed.`);
 
   if (build) {
     const dist = join(root, 'dist');

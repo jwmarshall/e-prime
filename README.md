@@ -12,6 +12,11 @@ claims and protection for code, identifiers, and quotations.
 Use it for status updates, code reviews, incident reports, and technical
 explanations—not to restyle your source code.
 
+The [single-page introduction](https://github.com/jwmarshall/e-prime/blob/main/docs/index.html)
+covers the approach, installation, and expectations. See
+[GitHub Pages setup](https://github.com/jwmarshall/e-prime/blob/main/CONTRIBUTING.md#github-pages)
+to publish it.
+
 ## What changes?
 
 E-Prime avoids *be, am, is, are, was, were, been,* and *being* in original
@@ -35,6 +40,40 @@ Grammar alone cannot establish truth, safety, or better reasoning.
 - **No runtime dependencies:** no CLI, install hooks, telemetry, or model service.
 
 ## Quick start
+
+### Claude Code marketplace
+
+Install directly from this repository, independently of npm:
+
+```sh
+claude plugin marketplace add jwmarshall/e-prime
+claude plugin install e-prime@jwmarshall-e-prime
+```
+
+In a new Claude Code session, invoke **`/e-prime:e-prime`**. The plugin
+namespace distinguishes this from `/e-prime` for a manually copied skill.
+Use one installation route per host to avoid duplicate discovery.
+
+### Cursor and Codex plugins
+
+The root `plugin.json` uses the
+[Agent Plugins standard](https://agent-plugins.org), supported by both hosts.
+It discovers the same `skills/e-prime/` directory; no generated policy copy,
+hooks, MCP servers, or always-on rules ship with it.
+
+- **Cursor:** install through **Customize** once the plugin is available in
+  your marketplace. Until then, use the
+  [local plugin testing instructions](https://github.com/jwmarshall/e-prime/blob/main/MARKETPLACES.md#cursor)
+  or the standalone skill route below.
+- **Codex:** register the repository with
+  `codex plugin marketplace add jwmarshall/e-prime`, then select
+  **E-Prime by jwmarshall** in a supported desktop client's Plugins Directory
+  and install `e-prime`. The CLI command registers the source; it does not
+  itself install or activate the skill.
+
+These manifests do not imply approval or a listing in any official directory.
+See [marketplace publishing](https://github.com/jwmarshall/e-prime/blob/main/MARKETPLACES.md)
+for submission steps and verification limits.
 
 ### Pi or omp
 
@@ -65,7 +104,7 @@ Preserve the identifier test_refresh_token exactly.
 Installation makes the skill discoverable; it does not activate it for every reply.
 An unscoped invocation requests the current session, subject to context retention.
 
-### Codex, Claude Code, Cursor, and other hosts
+### Standalone skills: Codex, Claude Code, Cursor, and other hosts
 
 After npm publication:
 
@@ -146,7 +185,7 @@ describe the current policy.
 
 ## Package contents
 
-Only six files ship:
+Only six files ship in the npm tarball:
 
 ```text
 package.json
@@ -159,6 +198,11 @@ skills/e-prime/references/harnesses.md
 
 Development research and the historical `references/SKILL-no-procedure.md`
 variant stay in the source repository. Do not install the historical variant.
+
+Git-based plugin distribution additionally uses root `plugin.json`,
+`.claude-plugin/{plugin,marketplace}.json`, and
+`.agents/plugins/marketplace.json`. Those manifests stay out of the npm tarball;
+install marketplace plugins from this repository, not the npm artifact.
 
 ## Development and releases
 

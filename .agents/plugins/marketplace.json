@@ -1,0 +1,20 @@
+{
+  "name": "jwmarshall-e-prime",
+  "interface": {
+    "displayName": "E-Prime by jwmarshall"
+  },
+  "plugins": [
+    {
+      "name": "e-prime",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

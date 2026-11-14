@@ -1,0 +1,18 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "e-prime",
+  "version": "0.1.0",
+  "description": "Portable E-Prime communication skill with evidence-calibrated claims and protected technical literals.",
+  "author": {
+    "name": "jwmarshall"
+  },
+  "homepage": "https://github.com/jwmarshall/e-prime#readme",
+  "repository": "https://github.com/jwmarshall/e-prime",
+  "license": "MIT",
+  "keywords": [
+    "e-prime",
+    "agent-skills",
+    "technical-writing",
+    "coding-agents"
+  ]
+}

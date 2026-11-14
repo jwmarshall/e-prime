@@ -1,0 +1,14 @@
+{
+  "name": "jwmarshall-e-prime",
+  "description": "E-Prime communication skills for coding agents, maintained by jwmarshall.",
+  "owner": {
+    "name": "jwmarshall"
+  },
+  "plugins": [
+    {
+      "name": "e-prime",
+      "source": "./",
+      "description": "E-Prime communication for coding agents: scoped evidence and exact technical literals."
+    }
+  ]
+}

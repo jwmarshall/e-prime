@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="E-Prime for coding agents: describe what happened, say what supports it, and preserve exact technical details. Learn the approach and install the skill.">
+  <meta name="theme-color" content="#10151e">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="E-Prime — Claims with evidence. Words with care.">
+  <meta property="og:description" content="A portable communication skill for coding agents. Evidence-scoped claims, exact technical literals, and activation on your terms.">
+  <title>E-Prime — Clearer claims for coding agents</title>
+  <style>
+    :root { color-scheme: dark; --paper: #10151e; --ink: #e8edf5; --muted: #abb8cb; --line: #344155; --accent: #79e2c3; --secondary: #b7a5f5; --wash: #1b2534; }
+    * { box-sizing: border-box; }
+    html { scroll-padding-top: 2rem; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.65 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    a { color: var(--accent); text-underline-offset: .2em; }
+    a:hover { text-decoration-thickness: 2px; }
+    :focus-visible { outline: 3px solid var(--accent); outline-offset: 5px; }
+    .wrap { width: min(1100px, calc(100% - 3rem)); margin-inline: auto; }
+    .skip { position: absolute; left: 1rem; top: -5rem; padding: .6rem 1rem; background: var(--paper); z-index: 2; }
+    .skip:focus { top: 1rem; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; padding-block: 1.5rem; border-bottom: 1px solid var(--line); }
+    .brand { font-size: 1.25rem; font-weight: 750; color: var(--ink); text-decoration: none; letter-spacing: -.04em; }
+    .brand span { color: var(--accent); }
+    nav { display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: .9rem; }
+    nav a { color: var(--ink); text-decoration: none; }
+    .hero { padding-block: 5.5rem 4rem; }
+    .eyebrow { margin: 0 0 1.2rem; font: 700 .75rem/1.5 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .13em; color: var(--secondary); }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; letter-spacing: -.045em; line-height: 1.08; }
+    h1 { font-size: clamp(3.2rem, 7.5vw, 6.2rem); max-width: 950px; margin-bottom: 1.7rem; }
+    h1 em { color: var(--accent); font-weight: 400; }
+    .lead { font-size: 1.2rem; max-width: 660px; color: var(--muted); }
+    .actions { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; margin-top: 2rem; }
+    .button { display: inline-block; background: var(--accent); color: var(--paper); padding: .8rem 1.3rem; border-radius: 3px; font-size: .95rem; font-weight: 650; text-decoration: none; }
+    .button:hover { background: var(--secondary); }
+    .traits { display: flex; flex-wrap: wrap; gap: .6rem 1.8rem; list-style: none; padding: 0; margin: 2.2rem 0 0; font: .78rem/1.5 ui-monospace, monospace; color: var(--muted); }
+    section { padding-block: 3.5rem; border-top: 1px solid var(--line); }
+    h2 { font-size: clamp(2rem, 4vw, 3rem); margin-bottom: 1.5rem; }
+    h3 { font-size: 1.05rem; line-height: 1.4; margin-bottom: .7rem; }
+    .intro { max-width: 710px; }
+    .columns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2.5rem; margin-top: 2.2rem; }
+    .columns p, .note { font-size: .93rem; color: var(--muted); }
+    .number { display: block; color: var(--secondary); font: .8rem ui-monospace, monospace; margin-bottom: .9rem; }
+    .example { background: var(--wash); border: 1px solid var(--line); padding: 2rem; margin-top: 2rem; }
+    .comparison { display: grid; grid-template-columns: 1fr 1.5fr; gap: 2rem; }
+    .label { font: 700 .72rem/1.5 ui-monospace, monospace; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: .7rem; }
+    blockquote { font-family: Georgia, "Times New Roman", serif; font-size: 1.5rem; line-height: 1.45; margin: 0; }
+    .example .note { margin: 1.5rem 0 0; }
+    code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .88em; overflow-wrap: anywhere; }
+    :not(pre) > code { background: var(--wash); padding: .1em .25em; border-radius: 2px; }
+    pre { background: var(--wash); color: var(--ink); border: 1px solid var(--line); padding: 1.2rem 1.4rem; border-radius: 3px; white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.7; font-size: .9rem; }
+    pre code { font-size: inherit; }
+    details { border-top: 1px solid var(--line); padding: 1.1rem 0; }
+    details:last-of-type { border-bottom: 1px solid var(--line); }
+    summary { cursor: pointer; font-weight: 650; padding: .3rem 0; }
+    .install-content { padding: 1.2rem 0 .3rem; max-width: 850px; }
+    .install-content p:last-child { margin-bottom: 0; }
+    .table-scroll { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; font-size: .9rem; margin: 1.5rem 0; }
+    th, td { padding: .8rem .8rem .8rem 0; border-bottom: 1px solid var(--line); vertical-align: top; }
+    .callout { border-left: 3px solid var(--secondary); padding-left: 1.3rem; margin-top: 2rem; max-width: 800px; }
+    .callout p:last-child { margin-bottom: 0; }
+    .prompt { max-width: 850px; }
+    footer { border-top: 1px solid var(--line); padding-block: 2rem; display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; color: var(--muted); font-size: .85rem; }
+    footer p { margin: 0; }
+    footer a { color: inherit; }
+    @media (max-width: 700px) {
+      .wrap { width: calc(100% - 2rem); }
+      header { align-items: flex-start; flex-direction: column; gap: .8rem; }
+      nav { gap: 1.2rem; }
+      .hero { padding-block: 3.2rem; }
+      .columns, .comparison { grid-template-columns: 1fr; gap: 1.5rem; }
+      section { padding-block: 2.5rem; }
+      .example { padding: 1.3rem; }
+      pre { padding: 1rem; }
+    }
+    @media print {
+      :root { color-scheme: light; --paper: #ffffff; --ink: #222b26; --muted: #586159; --line: #cdd1c6; --accent: #245f52; --secondary: #554080; --wash: #f0f2f5; }
+      body { background: white; color: black; }
+      .wrap { width: 100%; }
+      header, .actions, .skip { display: none; }
+      .hero, section { padding-block: 1rem; }
+      h1 { font-size: 3rem; }
+      pre { color: black; background: white; border: 1px solid; }
+      details::details-content { content-visibility: visible; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="wrap">
+    <header>
+      <a class="brand" href="#" aria-label="E-Prime home">E<span>′</span> / E-Prime</a>
+      <nav aria-label="Main navigation">
+        <a href="#approach">The approach</a>
+        <a href="#install">Install</a>
+        <a href="#expect">What to expect</a>
+        <a href="https://github.com/jwmarshall/e-prime">GitHub ↗</a>
+      </nav>
+    </header>
+    <main id="main">
+      <div class="hero">
+        <p class="eyebrow">A communication skill for coding agents</p>
+        <h1>Less assertion.<br>More <em>evidence.</em></h1>
+        <p class="lead">Describe what happened. Say what supports it. Keep the exact technical details. E-Prime brings a meaning-first writing discipline to your agent’s everyday work.</p>
+        <div class="actions">
+          <a class="button" href="#install">Add the skill <span aria-hidden="true">↗</span></a>
+          <a href="#approach">See what changes</a>
+        </div>
+        <ul class="traits" aria-label="Project characteristics"><li>Plain Markdown</li><li>Opt-in activation</li><li>No runtime dependencies</li><li>MIT licensed</li></ul>
+      </div>
+
+      <section id="approach" aria-labelledby="approach-title">
+        <p class="eyebrow">01 / The approach</p>
+        <h2 id="approach-title">Check claims before verbs.</h2>
+        <div class="intro">
+          <p>E-Prime means English without grammatical forms of <em>to be</em>: <em>be, am, is, are, was, were, been, being</em>, including their contractions. That constraint invites writers to name actions, observations, and perspectives rather than rely on broad declarations.</p>
+          <p>This skill pairs that writing constraint with evidence-scoped claims and protection for exact technical literals. Use it for code reviews, status updates, incident reports, and explanations—not to restyle source code.</p>
+        </div>
+        <div class="example">
+          <div class="comparison">
+            <div><p class="label">A broad claim</p><blockquote>“The fix is correct.”</blockquote></div>
+            <div><p class="label">A bounded observation</p><blockquote>“<code>test_refresh_token</code> passed; integration tests have not run.”</blockquote></div>
+          </div>
+          <p class="note">Illustrative rewrite, assuming that evidence. Never invent a test result to make a sentence sound more precise.</p>
+        </div>
+        <div class="columns">
+          <div><span class="number">01</span><h3>Name the observation.</h3><p>Say which request failed, which test passed, or who reported the behavior. Avoid turning one observation into a universal claim.</p></div>
+          <div><span class="number">02</span><h3>Keep the boundary.</h3><p>Distinguish evidence from inference. Name what remains unchecked instead of letting confident wording hide uncertainty.</p></div>
+          <div><span class="number">03</span><h3>Preserve the literal.</h3><p>Leave code, commands, API names, quotations, and diagnostics untouched—even <code>Error: token is expired</code>.</p></div>
+        </div>
+      </section>
+
+      <section id="install" aria-labelledby="install-title">
+        <p class="eyebrow">02 / Installation</p>
+        <h2 id="install-title">Your agent. One small skill.</h2>
+        <p class="intro">Choose one route per host to avoid duplicate discovery. Installation makes the skill available; explicit invocation or active instructions determine when it applies. No CLI, telemetry, or model service ships with the skill.</p>
+        <details open>
+          <summary>Claude Code · repository marketplace</summary>
+          <div class="install-content">
+            <p>Install directly from GitHub, without npm:</p>
+            <pre><code>claude plugin marketplace add jwmarshall/e-prime
+claude plugin install e-prime@jwmarshall-e-prime</code></pre>
+            <p>Start a new Claude Code session and invoke <code>/e-prime:e-prime</code>. For a single task, explicitly add “for this task only.”</p>
+            <p class="note">This repository marketplace does not imply approval or a listing in an official directory.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Cursor, Codex, or Claude Code · standalone skill</summary>
+          <div class="install-content">
+            <p>Clone the repository; no npm publication required:</p>
+            <pre><code>git clone https://github.com/jwmarshall/e-prime.git
+cd e-prime</code></pre>
+            <p>Copy the complete <code>skills/e-prime/</code> folder into your target project at the destination below. Keep <code>references/</code> beside <code>SKILL.md</code>; review existing files before replacing them.</p>
+            <div class="table-scroll" role="region" aria-label="Standalone skill installation paths" tabindex="0">
+              <table>
+                <thead><tr><th scope="col">Host</th><th scope="col">Project destination</th><th scope="col">Invoke</th></tr></thead>
+                <tbody>
+                  <tr><th scope="row">Cursor</th><td><code>.cursor/skills/e-prime/</code></td><td>Select <code>e-prime</code> from <code>/</code></td></tr>
+                  <tr><th scope="row">Codex</th><td><code>.agents/skills/e-prime/</code></td><td><code>$e-prime</code></td></tr>
+                  <tr><th scope="row">Claude Code</th><td><code>.claude/skills/e-prime/</code></td><td><code>/e-prime</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+            <p>Copied skills need separate updates. Prefer plugin distribution? See the <a href="https://github.com/jwmarshall/e-prime/blob/main/MARKETPLACES.md">Cursor and Codex marketplace instructions</a>, including local testing and availability limits.</p>
+          </div>
+        </details>
+        <details>
+          <summary>Pi or omp · local checkout or npm</summary>
+          <div class="install-content">
+            <p>Clone the repository and register its absolute path with one host:</p>
+            <pre><code>git clone https://github.com/jwmarshall/e-prime.git
+# Choose one; replace the path with your checkout:
+pi install /absolute/path/to/e-prime
+omp plugin install /absolute/path/to/e-prime</code></pre>
+            <p>After npm publication, these commands provide an alternative:</p>
+            <pre><code># Pi
+pi install npm:@jwmarshall/e-prime
+# Or omp
+omp plugin install @jwmarshall/e-prime</code></pre>
+            <p>Start a fresh session and invoke <code>/skill:e-prime</code>. Add <code>--local</code> to the Pi install command for project scope.</p>
+          </div>
+        </details>
+        <p class="note" style="margin-top: 1.2rem">Need standing activation, host-specific paths, or removal steps? Read the <a href="https://github.com/jwmarshall/e-prime/blob/main/skills/e-prime/references/harnesses.md">installation and activation guide</a>.</p>
+      </section>
+
+      <section id="expect" aria-labelledby="expect-title">
+        <p class="eyebrow">03 / In practice</p>
+        <h2 id="expect-title">A writing discipline, not a truth detector.</h2>
+        <div class="columns">
+          <div><h3>Expect scoped communication.</h3><p>While active, the skill guides original English in updates, explanations, reviews, and final answers. Meaning, safety, and exact requirements take priority over style.</p></div>
+          <div><h3>Keep control of the scope.</h3><p>Ask for one task or a session. An unscoped invocation requests the current session, subject to context retention. Installation alone does not enable standing use.</p></div>
+          <div><h3>Review consequential output.</h3><p>Grammar cannot establish truth or improve reasoning by itself. Model trials have shown altered identifiers and omitted evidence limits despite the policy.</p></div>
+        </div>
+        <div class="prompt">
+          <h3>Try a bounded request</h3>
+          <p>After invoking the skill, give it facts and a clear scope:</p>
+          <pre><code>Apply E-Prime for this task only.
+Write a two-sentence status update.
+Evidence: test_refresh_token passed; no integration tests ran.
+Preserve the identifier test_refresh_token exactly.</code></pre>
+          <p>Look for both the passing test and the untested integration boundary. Check the identifier character for character. Do not accept a new claim of overall correctness.</p>
+        </div>
+        <div class="callout">
+          <h3>Pause it whenever you need to.</h3>
+          <p>Say “Suspend E-Prime for this reply,” “Turn E-Prime off for the rest of this session,” or “Resume E-Prime.” For durable opt-out, remove any standing instruction you added to your host’s configuration.</p>
+          <p class="note">Conversation controls do not edit configuration. Context compaction can lose activation state; subagents need their own loaded or explicitly supplied policy. Package checks prove file integrity and installability, not reliable model compliance or support for every host.</p>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <p>E-Prime / Maintained by <a href="https://github.com/jwmarshall">jwmarshall</a></p>
+      <p><a href="https://github.com/jwmarshall/e-prime">Source</a> · <a href="https://github.com/jwmarshall/e-prime/issues">Feedback</a> · <a href="https://github.com/jwmarshall/e-prime/blob/main/LICENSE">MIT license</a></p>
+    </footer>
+  </div>
+</body>
+</html>
