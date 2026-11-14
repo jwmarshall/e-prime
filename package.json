@@ -3,11 +3,30 @@
   "version": "0.1.0",
   "description": "Portable E-Prime communication skill with evidence-calibrated claims and protected technical literals.",
   "license": "MIT",
+  "author": "jwmarshall",
+  "homepage": "https://github.com/jwmarshall/e-prime#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jwmarshall/e-prime.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jwmarshall/e-prime/issues"
+  },
   "keywords": [
     "pi-package",
     "agent-skill",
-    "e-prime"
+    "e-prime",
+    "agent-skills",
+    "coding-agents",
+    "technical-writing",
+    "claude-code",
+    "codex",
+    "oh-my-pi"
   ],
+  "scripts": {
+    "test": "node scripts/package.mjs",
+    "build": "node scripts/package.mjs --build"
+  },
   "files": [
     "skills/e-prime/"
   ],
@@ -17,6 +36,7 @@
     ]
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   }
 }

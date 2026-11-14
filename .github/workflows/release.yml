@@ -1,0 +1,42 @@
+name: Release
+
+on:
+  push:
+    tags: ['v[0-9]*']
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Prepare draft GitHub release
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      RELEASE_TAG: ${{ github.ref_name }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: '24'
+      - name: Validate version, build, and smoke-install package
+        run: npm run build
+      - name: Create draft with release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        shell: bash
+        run: |
+          args=(--draft --verify-tag --generate-notes --title "$RELEASE_TAG")
+          if [[ "$RELEASE_TAG" == *-* ]]; then
+            args+=(--prerelease)
+          fi
+          gh release create "$RELEASE_TAG" dist/*.tgz dist/SHA256SUMS "${args[@]}"

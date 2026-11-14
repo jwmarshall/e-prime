@@ -1,16 +1,44 @@
-# E-Prime
+# E-Prime for coding agents
 
-`@jwmarshall/e-prime` supplies an adaptable communication skill for coding
-agents. While active, it applies E-Prime grammar to original English prose,
-keeps claims scoped to evidence, and preserves meaning and exact technical
-literals. It does not restyle code, expand permissions, or guarantee correctness.
+[![CI](https://github.com/jwmarshall/e-prime/actions/workflows/ci.yml/badge.svg)](https://github.com/jwmarshall/e-prime/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-No runtime dependencies, executable code, install scripts, hooks, or automatic
-activation. Users choose when and where to activate it.
+**Describe what happened. Say what supports it. Keep the exact technical details.**
 
-## Install
+`@jwmarshall/e-prime` gives coding agents a portable communication skill:
+English without grammatical forms of *to be*, paired with evidence-scoped
+claims and protection for code, identifiers, and quotations.
 
-After publishing this package to npm, choose your harness:
+Use it for status updates, code reviews, incident reports, and technical
+explanations—not to restyle your source code.
+
+## What changes?
+
+E-Prime avoids *be, am, is, are, was, were, been,* and *being* in original
+English prose, including their contractions. This skill adds a meaning-first
+rule: never invent evidence or alter an exact literal just to satisfy grammar.
+
+Illustrative rewrites, assuming the stated evidence:
+
+| Instead of | With E-Prime and scoped evidence |
+| --- | --- |
+| “The service is down.” | “One request returned HTTP 503; we have not checked other endpoints.” |
+| “The fix is correct.” | “`test_refresh_token` passed; integration tests have not run.” |
+| “The error is `Error: token is expired`.” | “The request returned `Error: token is expired`.” |
+
+The goal: more accountable communication, not clever verb substitution.
+Grammar alone cannot establish truth, safety, or better reasoning.
+
+- **Portable:** Markdown skill files for Pi, omp, and filesystem-based skill hosts.
+- **Opt-in:** task, session, or user-configured standing activation.
+- **Literal-preserving:** code, commands, API names, diagnostics, and quotes stay exact.
+- **No runtime dependencies:** no CLI, install hooks, telemetry, or model service.
+
+## Quick start
+
+### Pi or omp
+
+Once the package is published to npm, choose your harness:
 
 ```sh
 # Pi
@@ -20,96 +48,136 @@ pi install npm:@jwmarshall/e-prime
 omp plugin install @jwmarshall/e-prime
 ```
 
-Start a fresh session and invoke `/skill:e-prime`. Installation exposes the
-skill; it does not force the agent to use it on every reply.
+Start a fresh session, then invoke:
 
-For Codex, Claude Code, Cursor, or another filesystem-based skill consumer:
+```text
+/skill:e-prime
+```
+
+Try a bounded request:
+
+```text
+Write a two-sentence status update in E-Prime.
+Evidence: test_refresh_token passed; no integration tests ran.
+Preserve the identifier test_refresh_token exactly.
+```
+
+Installation makes the skill discoverable; it does not activate it for every reply.
+An unscoped invocation requests the current session, subject to context retention.
+
+### Codex, Claude Code, Cursor, and other hosts
+
+After npm publication:
 
 ```sh
 npm install --save-dev @jwmarshall/e-prime
 ```
 
-Reference `node_modules/@jwmarshall/e-prime/skills/e-prime/SKILL.md` from your
-instructions, or copy the complete `skills/e-prime/` directory into the host's
-skill location. Keep its references alongside it. Do not overwrite an existing
-skill without reviewing it. Copied files need separate updates.
+Copy the **complete** `node_modules/@jwmarshall/e-prime/skills/e-prime/`
+directory into your host's project skill location:
 
-| Harness | Project destination | Invocation |
+| Host | Destination | Invocation |
 | --- | --- | --- |
 | Codex | `.agents/skills/e-prime/` | `$e-prime` |
 | Claude Code | `.claude/skills/e-prime/` | `/e-prime` |
 | Cursor | `.cursor/skills/e-prime/` | Select `e-prime` from `/` |
 
-This package has no `npx` command. Use the host's package manager or the portable
-files, not an installer that rewrites your configuration.
+Keep the `references/` directory beside `SKILL.md`. Review existing files before
+replacing them; copied skills need separate updates. Alternatively, point your
+host's active instructions directly at the installed `SKILL.md`.
 
-## Activate on your terms
+This package has no `npx` command and does not rewrite host configuration.
+See [installation and activation](skills/e-prime/references/harnesses.md)
+for host-specific scope, imports, removal, and verification.
 
-For one task, ask the agent to load the installed E-Prime skill for that task.
-An unscoped direct invocation requests the current session, subject to context
-retention.
+### Try it before npm publication
 
-For standing use, add this line yourself to a prompt or a harness-loaded
-`AGENTS.md`, `CLAUDE.md`, or native rule file. Replace `<skill-path>` with the
-actual installed `SKILL.md` path:
+```sh
+git clone https://github.com/jwmarshall/e-prime.git
+cd e-prime
+```
+
+Register the absolute checkout path with **one** host:
+
+```sh
+pi install /absolute/path/to/e-prime
+# Or:
+omp plugin install /absolute/path/to/e-prime
+```
+
+For Pi project scope, add `--local`. For other hosts, copy `skills/e-prime/`
+from the checkout to the destination above. No npm package required.
+
+## Choose when it applies
+
+For a single task, ask the agent to load E-Prime **for this task only**.
+
+For standing use, add the following to a prompt or a file your host loads
+(`AGENTS.md`, `CLAUDE.md`, or its native rules). Replace `<skill-path>` with
+the installed `SKILL.md` path:
 
 > Before responding, load `<skill-path>` and its required standing policy. Apply E-Prime to all original English communication across tasks unless I explicitly suspend it. Preserve exact literals and meaning.
 
-A prompt instruction depends on session retention; a file instruction applies
-only where the harness loads it. A directive to read the skill still depends
-on agent adherence. Children need their own loaded or explicitly supplied
-policy. No automatic propagation or durable mode state ships with this package.
+To change scope conversationally:
 
-Say "Suspend E-Prime for this reply", "Turn E-Prime off for the rest of this
-session", or "Resume E-Prime". Remove your standing instruction for durable
-opt-out; conversational suspension does not edit configuration.
+- “Suspend E-Prime for this reply.”
+- “Turn E-Prime off for the rest of this session.”
+- “Resume E-Prime.”
 
-See [installation and activation](skills/e-prime/references/harnesses.md) for
-native instruction surfaces, imports, removal, and verification.
+Remove the standing instruction for durable opt-out. Conversation controls do
+not edit configuration. Context compaction can lose activation state, and
+subagents need their own loaded or explicitly supplied policy.
 
-## Try the checkout or a local package
+## Scope and limitations
 
-Before npm publication, Pi and omp accept this checkout directly:
+The skill changes original English communication, not permissions or existing
+files. Meaning, safety, and exact requirements take priority over style.
 
-```sh
-pi install /absolute/path/to/e-prime-skill
-omp plugin install /absolute/path/to/e-prime-skill
-```
+Model trials have shown identifier paraphrasing and omitted evidence limits
+despite the policy. Review consequential output. Package checks establish
+file integrity and installability—not reliable model compliance or verified
+support for every host.
 
-Those commands register the package in the selected harness's user environment.
-For Pi project scope, add `--local`. Do not run both unless you want both hosts
-to discover the skill. Neither command adds a standing activation instruction.
-
-To build a distributable tarball without running lifecycle scripts:
-
-```sh
-npm pack --ignore-scripts
-```
-
-Install the resulting `jwmarshall-e-prime-0.1.0.tgz` into a consuming project
-with `npm install --save-dev /absolute/path/to/jwmarshall-e-prime-0.1.0.tgz`,
-then use its skill directory as described above.
-
-Publishing requires permission to publish under `@jwmarshall`. From a reviewed
-checkout, the maintainer can run `npm publish --access public`. Packaging this
-repository does not publish it or establish registry-name availability.
+For background, see the
+[research and sources](https://github.com/jwmarshall/e-prime/blob/main/references/research.md)
+and [validation record](https://github.com/jwmarshall/e-prime/blob/main/references/validation.md).
+These development records include earlier skill revisions; they do not all
+describe the current policy.
 
 ## Package contents
 
-- `skills/e-prime/SKILL.md`: canonical skill entry point.
-- `skills/e-prime/references/standing-policy.md`: complete operational policy.
-- `skills/e-prime/references/harnesses.md`: installation and activation guidance.
-- `package.json`, this README, and the MIT license.
+Only six files ship:
 
-The source repository retains `references/research.md`,
-`references/validation.md`, and `SKILL-no-procedure.md` for development history.
-They do not ship in the npm package. The experimental variant preserves older
-mode wording; do not install it as the current skill.
+```text
+package.json
+README.md
+LICENSE
+skills/e-prime/SKILL.md
+skills/e-prime/references/standing-policy.md
+skills/e-prime/references/harnesses.md
+```
 
-Model trials have shown identifier paraphrasing and omitted evidence limits
-despite the policy. Skill discovery and structural checks do not prove reliable
-compliance. Review consequential outputs.
+Development research and the historical `references/SKILL-no-procedure.md`
+variant stay in the source repository. Do not install the historical variant.
+
+## Development and releases
+
+Use Node.js 22+ and npm. No dependency installation or compilation required:
+
+```sh
+npm test       # Validate, pack, and install in an isolated temporary directory
+npm run build  # Same checks, then write the tarball and SHA-256 checksum to dist/
+```
+
+CI checks Linux and Windows on Node.js 22 and 24. Version tags create a
+**draft GitHub release** with the validated tarball and checksum. npm publication
+remains a separate, manual maintainer action; workflows never publish to npm.
+
+See [contribution and release instructions](https://github.com/jwmarshall/e-prime/blob/main/CONTRIBUTING.md)
+for checks, versioning, and the manual publishing checklist.
+Report reproducible problems or suggest improvements through
+[GitHub issues](https://github.com/jwmarshall/e-prime/issues).
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
+[MIT](LICENSE).
