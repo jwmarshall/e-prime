@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Prepare version 0.1.1 by migrating the canonical skill and plugin manifests
+  into `plugin/`, isolating submissions from development tooling while
+  preserving npm's six installed paths and root-checkout Pi/omp installation.
+  No npm publication; the existing 0.1.0 tag and artifact remain unchanged.
 - Isolate development npm subprocesses from inherited credentials and user
   configuration; run packing and smoke installation offline.
 - Disable lifecycle scripts in the README's npm installation command and

@@ -1,34 +1,20 @@
 # Installation and activation
 
-The npm package `@jwmarshall/e-prime` supplies a portable skill, not an
-activation service. No executable hooks, installer, runtime dependencies,
-telemetry, model routing, or persistent mode store ship with it.
+E-Prime supplies a portable Markdown skill, not an activation service.
+No executable hooks, installer, runtime dependencies, telemetry, model routing,
+or persistent mode store ship with the plugin.
 
-## Install the skill
+## Installation routes
 
-After publication to npm:
+Use your host's plugin interface, or copy the complete skill directory into
+one of the project locations below. For package-manager and repository
+installation instructions, see the
+[project installation guide](https://jwmarshall.github.io/e-prime/#install).
 
-```sh
-pi install npm:@jwmarshall/e-prime
-```
-
-```sh
-omp plugin install @jwmarshall/e-prime
-```
-
-Choose the command for your harness. Pi supports project scope with `--local`;
-omp's npm installation uses user scope. Start a new session after installation.
-Invoke `/skill:e-prime`, or ask the agent to load the installed skill.
-
-For other harnesses, install the npm package in your project:
-
-```sh
-npm install --save-dev @jwmarshall/e-prime
-```
-
-Then either reference `node_modules/@jwmarshall/e-prime/skills/e-prime/SKILL.md`
-from active instructions, or copy the complete `skills/e-prime/` directory
-into one of the following skill locations:
+The npm distribution retains the installed path
+`node_modules/@jwmarshall/e-prime/skills/e-prime/`. The source repository keeps
+the same skill in its self-contained plugin folder. Start a new session after
+installation, then use the invocation for your host.
 
 | Harness | Project skill directory | Invocation |
 | --- | --- | --- |
@@ -40,8 +26,8 @@ into one of the following skill locations:
 
 Use one installation route per harness to avoid duplicate discovery. Preserve
 existing files; compare an existing destination before replacing it. A copied
-skill does not track npm updates. Copy its references too: `SKILL.md` requires
-`references/standing-policy.md`, resolved relative to its own directory.
+skill does not track upstream updates. Copy its references too: `SKILL.md`
+requires `references/standing-policy.md`, resolved relative to its own directory.
 
 ## Choose activation scope
 

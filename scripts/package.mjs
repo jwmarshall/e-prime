@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import { createHash } from 'node:crypto';
-import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, posix } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
+const pluginRoot = join(root, 'plugin');
 const build = process.argv[2] === '--build';
 assert(process.argv.length === (build ? 3 : 2), 'Usage: npm test or npm run build');
 assert(process.env.npm_execpath, 'Run through npm test or npm run build');
@@ -26,7 +27,8 @@ assert.equal(pkg.license, 'MIT');
 assert.equal(pkg.private, undefined, 'Package must remain publishable');
 assert.equal(pkg.publishConfig.access, 'public');
 assert.equal(pkg.publishConfig.registry, 'https://registry.npmjs.org/');
-assert.deepEqual(pkg.pi.skills, ['./skills']);
+assert.deepEqual(pkg.pi.skills, ['./plugin/skills']);
+assert.deepEqual(pkg.files, ['plugin/skills/e-prime/']);
 assert.equal(pkg.bin, undefined, 'The skill must not expose an executable');
 for (const field of ['dependencies', 'optionalDependencies', 'peerDependencies', 'devDependencies']) {
   assert.equal(Object.keys(pkg[field] ?? {}).length, 0, `Unexpected ${field}`);
@@ -38,12 +40,40 @@ if (process.env.RELEASE_TAG !== undefined) {
   assert.equal(process.env.RELEASE_TAG, `v${pkg.version}`, 'Release tag must match package.json version');
 }
 
+// Keep the consumer's npm layout independent of the repository's plugin folder.
+const packageMetadata = { ...pkg, files: ['skills/e-prime/'], pi: { skills: ['./skills'] } };
+delete packageMetadata.scripts;
+const packageContent = (path) => path === 'package.json'
+  ? `${JSON.stringify(packageMetadata, null, 2)}\n`
+  : source(path.startsWith('skills/') ? `plugin/${path}` : path);
+
+function filesIn(directory, prefix = '') {
+  return readdirSync(directory, { withFileTypes: true }).flatMap((entry) => {
+    const path = `${prefix}${entry.name}`;
+    if (entry.isDirectory()) return filesIn(join(directory, entry.name), `${path}/`);
+    assert(entry.isFile(), `${path}: distribution entries must be regular files, not symlinks`);
+    return [path];
+  }).sort();
+}
+
+const pluginFiles = [
+  '.claude-plugin/icon.png',
+  '.claude-plugin/plugin.json',
+  'LICENSE',
+  'README.md',
+  'plugin.json',
+  ...expectedFiles.filter((path) => path.startsWith('skills/')),
+].sort();
+assert.deepEqual(filesIn(pluginRoot), pluginFiles,
+  'Plugin contents changed: keep development tooling and unrelated files outside the installable folder');
+assert.equal(source('plugin/LICENSE'), source('LICENSE'), 'Plugin must carry the project license');
+
 // Git-distributed plugins share the npm skill without copying its policy.
 const manifestKeys = new Set([
   '$schema', 'name', 'version', 'description', 'author', 'homepage',
   'repository', 'license', 'keywords',
 ]);
-for (const path of ['plugin.json', '.claude-plugin/plugin.json']) {
+for (const path of ['plugin/plugin.json', 'plugin/.claude-plugin/plugin.json']) {
   const manifest = JSON.parse(source(path));
   assert.equal(manifest.name, 'e-prime', `${path}: plugin namespace must match the skill`);
   assert.equal(manifest.version, pkg.version, `${path}: version must match package.json`);
@@ -58,36 +88,48 @@ for (const path of ['plugin.json', '.claude-plugin/plugin.json']) {
     assert(manifestKeys.has(key), `${path}: review unexpected field ${key}; this plugin only bundles skills`);
   }
 }
-assert.equal(JSON.parse(source('plugin.json')).$schema,
+assert.equal(JSON.parse(source('plugin/plugin.json')).$schema,
   'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json');
 
 const claudeCatalog = JSON.parse(source('.claude-plugin/marketplace.json'));
 const codexCatalog = JSON.parse(source('.agents/plugins/marketplace.json'));
-for (const catalog of [claudeCatalog, codexCatalog]) {
+const cursorCatalog = JSON.parse(source('.cursor-plugin/marketplace.json'));
+for (const catalog of [claudeCatalog, codexCatalog, cursorCatalog]) {
   assert.equal(catalog.name, 'jwmarshall-e-prime');
   assert.equal(catalog.plugins.length, 1, 'The marketplace must distribute only this plugin');
   assert.equal(catalog.plugins[0].name, 'e-prime', 'Marketplace entry must resolve the plugin name');
 }
 assert.equal(claudeCatalog.owner.name, pkg.author);
-assert.equal(claudeCatalog.plugins[0].source, './', 'Claude marketplace must resolve the repository root');
-assert.deepEqual(codexCatalog.plugins[0].source, { source: 'local', path: './' },
-  'Codex marketplace must resolve the repository root');
+assert.equal(claudeCatalog.plugins[0].source, './plugin', 'Claude marketplace must resolve the plugin folder');
+assert.deepEqual(codexCatalog.plugins[0].source, { source: 'local', path: './plugin' },
+  'Codex marketplace must resolve the plugin folder');
 assert.equal(codexCatalog.plugins[0].policy.installation, 'AVAILABLE', 'Plugin installation must remain opt-in');
 assert.equal(codexCatalog.plugins[0].policy.authentication, 'ON_INSTALL');
 assert.equal(codexCatalog.plugins[0].category, 'Productivity');
+assert.equal(cursorCatalog.owner.name, pkg.author);
+assert.equal(cursorCatalog.plugins[0].source, 'plugin', 'Cursor marketplace must resolve the plugin folder');
+for (const field of ['version', 'description', 'homepage', 'license']) {
+  assert.equal(cursorCatalog.plugins[0][field], pkg[field], `Cursor catalog ${field} must match package.json`);
+}
+assert.equal(cursorCatalog.plugins[0].author.name, pkg.author);
+assert.equal(cursorCatalog.plugins[0].repository, 'https://github.com/jwmarshall/e-prime');
 
 // Check the current folded-scalar frontmatter, not a general YAML grammar.
-const skill = source('skills/e-prime/SKILL.md');
+const skill = source('plugin/skills/e-prime/SKILL.md');
 assert.match(skill, /^---\r?\nname: e-prime\r?\ndescription: >\r?\n(?:  .+\r?\n)+---\r?\n/,
   'Expected e-prime name and a nonempty folded description');
 
-for (const path of expectedFiles.filter((file) => file.endsWith('.md'))) {
-  for (const [, href] of source(path).matchAll(/\]\(([^\s)]+)\)/g)) {
-    if (/^(?:[a-z][a-z\d+.-]*:|#)/i.test(href)) continue;
-    const target = posix.normalize(posix.join(posix.dirname(path), decodeURIComponent(href.split('#')[0])));
-    assert(expectedFiles.includes(target), `${path}: local link must ship in the package: ${href}`);
+function checkLinks(files, content) {
+  for (const path of files.filter((file) => file.endsWith('.md'))) {
+    for (const [, href] of content(path).matchAll(/\]\(([^\s)]+)\)/g)) {
+      if (/^(?:[a-z][a-z\d+.-]*:|#)/i.test(href)) continue;
+      const target = posix.normalize(posix.join(posix.dirname(path), decodeURIComponent(href.split('#')[0])));
+      assert(files.includes(target), `${path}: local link must stay inside the distribution: ${href}`);
+    }
   }
 }
+checkLinks(expectedFiles, packageContent);
+checkLinks(pluginFiles, (path) => source(`plugin/${path}`));
 
 const temporary = mkdtempSync(join(tmpdir(), 'e-prime-package-'));
 // Development checks never need the caller's credentials or npm configuration.
@@ -122,7 +164,13 @@ function npm(args, cwd = root) {
 try {
   writeFileSync(npmEnvironment.npm_config_userconfig, '');
   writeFileSync(npmEnvironment.npm_config_globalconfig, '');
-  const [packed] = JSON.parse(npm(['pack', '--ignore-scripts', '--json', '--pack-destination', temporary]));
+  const staging = join(temporary, 'package');
+  for (const path of expectedFiles) {
+    const destination = join(staging, path);
+    mkdirSync(dirname(destination), { recursive: true });
+    writeFileSync(destination, packageContent(path));
+  }
+  const [packed] = JSON.parse(npm(['pack', '--ignore-scripts', '--json', '--pack-destination', temporary], staging));
   assert.equal(packed.name, pkg.name);
   assert.equal(packed.version, pkg.version);
   assert.deepEqual(packed.files.map(({ path }) => path).sort(), expectedFiles,
@@ -136,7 +184,7 @@ try {
   npm(['install', '--offline', '--ignore-scripts', '--no-audit', '--no-fund', '--package-lock=false', tarball], consumer);
   const installed = join(consumer, 'node_modules', '@jwmarshall', 'e-prime');
   for (const path of expectedFiles) {
-    assert.equal(readFileSync(join(installed, path), 'utf8'), source(path), `Installed file differs: ${path}`);
+    assert.equal(readFileSync(join(installed, path), 'utf8'), packageContent(path), `Installed file differs: ${path}`);
   }
   console.log(`Validated ${pkg.name}@${pkg.version}: marketplace manifests, ${expectedFiles.length} npm files, local links, and offline install passed.`);
 

@@ -1,6 +1,6 @@
 {
   "name": "@jwmarshall/e-prime",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Portable E-Prime communication skill with evidence-calibrated claims and protected technical literals.",
   "license": "MIT",
   "author": "jwmarshall",
@@ -28,11 +28,11 @@
     "build": "node scripts/package.mjs --build"
   },
   "files": [
-    "skills/e-prime/"
+    "plugin/skills/e-prime/"
   ],
   "pi": {
     "skills": [
-      "./skills"
+      "./plugin/skills"
     ]
   },
   "publishConfig": {

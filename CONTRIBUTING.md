@@ -14,15 +14,24 @@ Both commands validate package metadata, the canonical skill's current
 frontmatter shape, relative Markdown link destinations in shipped files, and
 an exact six-file package allowlist. They create a real npm tarball, install it
 in an isolated temporary project offline with lifecycle scripts disabled, and
-compare every installed file with the source. Temporary files are removed.
+compare installed payloads with their sources and staged metadata. Temporary files
+are removed.
 The npm subprocesses use a temporary home, cache, and empty user/global npm
 configuration, with an allowlisted environment rather than inherited secrets.
 Both packing and installation run offline with lifecycle scripts disabled.
 `npm run build` also writes the tarball and `SHA256SUMS` to `dist/`.
 Older local tarballs remain there; the checksum describes only the latest build.
 
+The canonical skill lives in `plugin/skills/e-prime/`. Staging preserves npm's
+six installed paths by placing it under `skills/e-prime/`, alongside the root
+README and LICENSE. The staged `package.json` rewrites `files` and `pi.skills`
+for `./skills` and removes development scripts; the source package keeps
+`pi.skills: ["./plugin/skills"]` for root-checkout Pi/omp installation.
+Use `npm run build` for the official tarball. Do not run `npm pack` or
+`npm publish` against the checkout.
+
 They also check the Git-distributed plugin manifests and catalogs: names,
-publisher metadata, version alignment, repository-root sources, and opt-in
+publisher metadata, version alignment, `./plugin` catalog sources, and opt-in
 installation. These bounded checks are not full provider schema validators.
 See [marketplace publishing](MARKETPLACES.md) for native validation and testing.
 
@@ -33,7 +42,7 @@ update the allowlist in `scripts/package.mjs` and the README together.
 
 ## Changes and bug reports
 
-- Keep the canonical skill in `skills/e-prime/` and its required references
+- Keep the canonical skill in `plugin/skills/e-prime/` and its required references
   self-contained. `references/` at the repository root contains development
   history, not installable policy.
 - Preserve technical literals, meaning, opt-in activation, and authority
@@ -101,9 +110,11 @@ that a live Pages deployment succeeded.
 
 1. Choose an unused npm version and update `package.json`. For a subsequent
    release, `npm version patch --no-git-tag-version` updates the version without
-   creating a commit or tag. The initial release already uses `0.1.0`.
-   Set the same version in `plugin.json` and `.claude-plugin/plugin.json`.
-   The build rejects version drift; the catalogs inherit plugin metadata.
+   creating a commit or tag. The source now prepares `0.1.1`; this does not
+   publish it. Preserve the existing `0.1.0` tag and submitted artifact.
+   Set the same version in `plugin/plugin.json`,
+   `plugin/.claude-plugin/plugin.json`, and the Cursor catalog entry in
+   `.cursor-plugin/marketplace.json`. The build rejects version drift.
    Bump these versions whenever publishing skill changes so plugin updaters
    do not retain the old policy.
 2. Move the relevant changelog entries under the version and release date.

@@ -1,0 +1,20 @@
+{
+  "name": "jwmarshall-e-prime",
+  "owner": {
+    "name": "jwmarshall"
+  },
+  "plugins": [
+    {
+      "name": "e-prime",
+      "source": "plugin",
+      "version": "0.1.1",
+      "description": "Portable E-Prime communication skill with evidence-calibrated claims and protected technical literals.",
+      "author": {
+        "name": "jwmarshall"
+      },
+      "homepage": "https://github.com/jwmarshall/e-prime#readme",
+      "repository": "https://github.com/jwmarshall/e-prime",
+      "license": "MIT"
+    }
+  ]
+}

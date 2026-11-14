@@ -7,7 +7,7 @@
   "plugins": [
     {
       "name": "e-prime",
-      "source": "./",
+      "source": "./plugin",
       "description": "E-Prime communication for coding agents: scoped evidence and exact technical literals."
     }
   ]

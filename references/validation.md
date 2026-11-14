@@ -26,7 +26,7 @@ Portable YAML and structure only; behavior, safety, and harness compatibility ar
 
 The absolute command records this workstation's installed tool, not a dependency of the distributed skill. No package download occurred.
 
-**Directory qualification:** the source repository uses `e-prime-skill`; the skill's frontmatter uses `e-prime`. The Agent Skills specification requires the installed parent directory to match the skill name. Install the complete package as `<documented-skill-root>/e-prime/`, as described in [harness guidance](../skills/e-prime/references/harnesses.md). The source checkout itself does not establish native discovery or a name-matching installed layout.
+**Directory qualification:** the source repository uses `e-prime-skill`; the skill's frontmatter uses `e-prime`. The Agent Skills specification requires the installed parent directory to match the skill name. Install the complete package as `<documented-skill-root>/e-prime/`, as described in [harness guidance](../plugin/skills/e-prime/references/harnesses.md). The source checkout itself does not establish native discovery or a name-matching installed layout.
 
 The linter checks YAML, metadata constraints, and basic structure. It does not verify epistemic quality, security boundaries, or cross-harness execution.
 
@@ -173,7 +173,7 @@ Not exercised:
 - Any claim that the skill reduces hallucinations or improves reasoning compared with a baseline.
 
 Those results establish no native runtime coverage. The revised native
-acceptance procedure in [harness guidance](../skills/e-prime/references/harnesses.md) remains available
+acceptance procedure in [harness guidance](../plugin/skills/e-prime/references/harnesses.md) remains available
 for a separately authorized installation.
 
 ## Standing-policy revision

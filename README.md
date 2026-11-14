@@ -56,10 +56,10 @@ Use one installation route per host to avoid duplicate discovery.
 
 ### Cursor and Codex plugins
 
-The root `plugin.json` uses the
+The shared `plugin/plugin.json` uses the
 [Agent Plugins standard](https://agent-plugins.org), supported by both hosts.
-It discovers the same `skills/e-prime/` directory; no generated policy copy,
-hooks, MCP servers, or always-on rules ship with it.
+It discovers the canonical `plugin/skills/e-prime/` directory; no generated
+policy copy, hooks, MCP servers, or always-on rules ship with it.
 
 - **Cursor:** install through **Customize** once the plugin is available in
   your marketplace. Until then, use the
@@ -128,7 +128,7 @@ host's active instructions directly at the installed `SKILL.md`.
 This package has no `npx` command and does not rewrite host configuration.
 The install command disables lifecycle scripts; the package supplies only
 metadata, documentation, and the Markdown skill.
-See [installation and activation](skills/e-prime/references/harnesses.md)
+See [installation and activation](https://github.com/jwmarshall/e-prime/blob/main/plugin/skills/e-prime/references/harnesses.md)
 for host-specific scope, imports, removal, and verification.
 
 ### Try it before npm publication
@@ -146,8 +146,10 @@ pi install /absolute/path/to/e-prime
 omp plugin install /absolute/path/to/e-prime
 ```
 
-For Pi project scope, add `--local`. For other hosts, copy `skills/e-prime/`
-from the checkout to the destination above. No npm package required.
+For Pi project scope, add `--local`. The checkout's `pi.skills` points to
+`./plugin/skills`, so Pi and omp still install from the repository root.
+For other hosts, copy `plugin/skills/e-prime/` from the checkout to the
+destination above. No npm package required.
 
 ## Choose when it applies
 
@@ -201,10 +203,18 @@ skills/e-prime/references/harnesses.md
 Development research and the historical `references/SKILL-no-procedure.md`
 variant stay in the source repository. Do not install the historical variant.
 
-Git-based plugin distribution additionally uses root `plugin.json`,
-`.claude-plugin/{plugin,marketplace}.json`, and
-`.agents/plugins/marketplace.json`. Those manifests stay out of the npm tarball;
+Git-based plugin distribution uses the isolated `plugin/` folder, including
+`plugin/plugin.json`, `plugin/.claude-plugin/plugin.json`, and listing artwork.
+The root catalogs `.claude-plugin/marketplace.json`,
+`.cursor-plugin/marketplace.json`, and `.agents/plugins/marketplace.json` all
+reference the `plugin/` directory. These files stay out of the npm tarball;
 install marketplace plugins from this repository, not the npm artifact.
+
+The build stages the canonical skill under `skills/` for npm, preserving the
+six installed paths above. It rewrites the staged package's `files` and
+`pi.skills` for `./skills` and removes development scripts. The root README
+and LICENSE remain the npm copies. Run `npm run build` for the official
+tarball; do not run `npm pack` or `npm publish` against the checkout.
 
 ## Development and releases
 
