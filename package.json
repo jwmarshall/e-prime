@@ -1,0 +1,22 @@
+{
+  "name": "@jwmarshall/e-prime",
+  "version": "0.1.0",
+  "description": "Portable E-Prime communication skill with evidence-calibrated claims and protected technical literals.",
+  "license": "MIT",
+  "keywords": [
+    "pi-package",
+    "agent-skill",
+    "e-prime"
+  ],
+  "files": [
+    "skills/e-prime/"
+  ],
+  "pi": {
+    "skills": [
+      "./skills"
+    ]
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
