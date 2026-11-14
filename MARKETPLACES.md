@@ -122,10 +122,17 @@ No manifest guarantees directory acceptance or reserves a public listing name.
 Cursor and Codex require host-level installation testing; repository checks
 alone cannot certify their discovery or activation behavior.
 
-Claude's directory checks may warn about a missing listing icon. This repository
-does not supply branding artwork. Before submitting, provide an appropriate
-square PNG or JPEG through the provider's supported listing flow; Claude's
-validator recommends 512–2048 pixels per side and a file smaller than 2 MB.
+Claude's listing icon lives at `.claude-plugin/icon.png`: a square 512 px PNG
+under 2 MB. The portal may import it only on the first save or submission;
+changing the repository file does not update an existing listing's icon.
+Confirm the icon in the portal before submitting.
+
+Repository review may also inspect maintainer tooling. `scripts/package.mjs`
+only runs through the development checks, with isolated npm configuration,
+an allowlisted environment, offline npm operations, and lifecycle scripts
+disabled. The checksum-verified actionlint download in `.github/workflows/ci.yml`
+runs on GitHub's CI runner, not the plugin user's machine. Neither plugin
+manifest registers hooks, MCP servers, or credential configuration.
 
 ## Provider references
 

@@ -109,7 +109,7 @@ An unscoped invocation requests the current session, subject to context retentio
 After npm publication:
 
 ```sh
-npm install --save-dev @jwmarshall/e-prime
+npm install --ignore-scripts --save-dev @jwmarshall/e-prime
 ```
 
 Copy the **complete** `node_modules/@jwmarshall/e-prime/skills/e-prime/`
@@ -126,6 +126,8 @@ replacing them; copied skills need separate updates. Alternatively, point your
 host's active instructions directly at the installed `SKILL.md`.
 
 This package has no `npx` command and does not rewrite host configuration.
+The install command disables lifecycle scripts; the package supplies only
+metadata, documentation, and the Markdown skill.
 See [installation and activation](skills/e-prime/references/harnesses.md)
 for host-specific scope, imports, removal, and verification.
 
@@ -206,12 +208,9 @@ install marketplace plugins from this repository, not the npm artifact.
 
 ## Development and releases
 
-Use Node.js 22+ and npm. No dependency installation or compilation required:
-
-```sh
-npm test       # Validate, pack, and install in an isolated temporary directory
-npm run build  # Same checks, then write the tarball and SHA-256 checksum to dist/
-```
+Development requires Node.js 22+ and npm, with no dependency installation or
+compilation. Maintainer checks validate, pack, and smoke-install the skill
+offline; they do not run when a host loads the plugin.
 
 CI checks Linux and Windows on Node.js 22 and 24. Version tags create a
 **draft GitHub release** with the validated tarball and checksum. npm publication

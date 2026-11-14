@@ -15,6 +15,9 @@ frontmatter shape, relative Markdown link destinations in shipped files, and
 an exact six-file package allowlist. They create a real npm tarball, install it
 in an isolated temporary project offline with lifecycle scripts disabled, and
 compare every installed file with the source. Temporary files are removed.
+The npm subprocesses use a temporary home, cache, and empty user/global npm
+configuration, with an allowlisted environment rather than inherited secrets.
+Both packing and installation run offline with lifecycle scripts disabled.
 `npm run build` also writes the tarball and `SHA256SUMS` to `dist/`.
 Older local tarballs remain there; the checksum describes only the latest build.
 

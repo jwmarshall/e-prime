@@ -90,11 +90,29 @@ for (const path of expectedFiles.filter((file) => file.endsWith('.md'))) {
 }
 
 const temporary = mkdtempSync(join(tmpdir(), 'e-prime-package-'));
+// Development checks never need the caller's credentials or npm configuration.
+const npmEnvironment = {
+  HOME: temporary,
+  USERPROFILE: temporary,
+  TMPDIR: temporary,
+  TMP: temporary,
+  TEMP: temporary,
+  npm_config_cache: join(temporary, 'cache'),
+  npm_config_userconfig: join(temporary, 'user.npmrc'),
+  npm_config_globalconfig: join(temporary, 'global.npmrc'),
+  npm_config_offline: 'true',
+  npm_config_ignore_scripts: 'true',
+  npm_config_update_notifier: 'false',
+};
+// Preserve only executable lookup and Windows process-startup settings.
+for (const key of ['PATH', 'SystemRoot', 'WINDIR', 'ComSpec', 'PATHEXT']) {
+  if (process.env[key] !== undefined) npmEnvironment[key] = process.env[key];
+}
 function npm(args, cwd = root) {
   const result = spawnSync(process.execPath, [process.env.npm_execpath, ...args], {
     cwd,
     encoding: 'utf8',
-    env: { ...process.env, npm_config_update_notifier: 'false' },
+    env: npmEnvironment,
   });
   if (result.error) throw result.error;
   assert.equal(result.status, 0, `npm ${args[0]} failed:\n${result.stdout}\n${result.stderr}`);
@@ -102,6 +120,8 @@ function npm(args, cwd = root) {
 }
 
 try {
+  writeFileSync(npmEnvironment.npm_config_userconfig, '');
+  writeFileSync(npmEnvironment.npm_config_globalconfig, '');
   const [packed] = JSON.parse(npm(['pack', '--ignore-scripts', '--json', '--pack-destination', temporary]));
   assert.equal(packed.name, pkg.name);
   assert.equal(packed.version, pkg.version);

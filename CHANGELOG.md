@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Isolate development npm subprocesses from inherited credentials and user
+  configuration; run packing and smoke installation offline.
+- Disable lifecycle scripts in the README's npm installation command and
+  separate maintainer checks from plugin installation guidance.
+- Add a 512 px PNG Claude listing icon and document repository-review boundaries.
+
 ## 0.1.0 — 2026-11-14
 
 - Portable E-Prime skill with evidence-scoped claims, protected technical
