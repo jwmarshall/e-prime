@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 0.1.0 — 2026-11-14
+
 - Portable E-Prime skill with evidence-scoped claims, protected technical
   literals, and user-controlled activation.
 - Installation guidance for Pi, omp, and filesystem-based skill hosts.
